@@ -111,6 +111,9 @@ GenerateFlowFile → AttributesToJSON → JSON2PDFProcessor → UpdateAttribute 
                                                  LogAttribute
 ```
 
+### Visual Flow Diagram:
+![NiFi Flow Template](images/ScreenshotFlow.png)
+
 This template provides a complete end-to-end example of how to use the JSON2PDF processor in a real NiFi data flow.
 
 ## Installation
