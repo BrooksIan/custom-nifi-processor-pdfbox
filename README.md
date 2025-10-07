@@ -13,6 +13,7 @@ A custom Apache NiFi processor that converts JSON input to formatted PDF documen
 - [Processor Properties](#processor-properties)
 - [Relationships](#relationships)
 - [Usage Examples](#usage-examples)
+- [NiFi Flow Template](#nifi-flow-template)
 - [Installation](#installation)
 - [Building the Processor](#building-the-processor)
 - [Docker Deployment](#docker-deployment)
@@ -83,6 +84,34 @@ A custom Apache NiFi processor that converts JSON input to formatted PDF documen
 - Include Keys: `false`
 
 **Output:** A PDF document showing only the values without keys.
+
+## NiFi Flow Template
+
+This project includes a ready-to-use NiFi flow template (`JSON2PDFExample.xml`) that demonstrates the JSON2PDF processor in action. The template includes:
+
+### Template Components:
+- **GenerateFlowFile**: Generates sample JSON data for testing
+- **AttributesToJSON**: Converts FlowFile attributes to JSON format
+- **JSON2PDFProcessor**: Converts JSON to PDF (our custom processor)
+- **UpdateAttribute**: Updates filename to include `.pdf` extension
+- **PutFile**: Saves the generated PDF to `/tmp/pdfs/` directory
+- **LogAttribute**: Logs processor attributes for debugging
+
+### How to Use the Template:
+1. **Import the Template**: In NiFi, go to Templates → Upload Template → Select `JSON2PDFExample.xml`
+2. **Add Template to Canvas**: Drag the template from the Templates panel onto your canvas
+3. **Configure Processors**: Adjust the JSON2PDFProcessor properties as needed
+4. **Start the Flow**: Start all processors to begin processing
+5. **Check Output**: Generated PDFs will be saved to `/tmp/pdfs/` directory
+
+### Template Flow:
+```
+GenerateFlowFile → AttributesToJSON → JSON2PDFProcessor → UpdateAttribute → PutFile
+                                                      ↓
+                                                 LogAttribute
+```
+
+This template provides a complete end-to-end example of how to use the JSON2PDF processor in a real NiFi data flow.
 
 ## Installation
 
