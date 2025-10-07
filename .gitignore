@@ -126,3 +126,4 @@ Thumbs.db
 # NiFi specific
 *.nar
 *.nar.tmp
+!Custom_NiFi_Nars/*.nar
