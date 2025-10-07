@@ -143,10 +143,21 @@ This template provides a complete end-to-end example of how to use the JSON2PDF 
 
 ### Manual Installation
 
-1. Build the NAR file using Maven
-2. Copy the generated `json2pdf-processor-1.0.nar` file to your NiFi's `lib` directory
-3. Restart NiFi
-4. The processor will be available in the processor palette
+#### Option 1: Use Pre-built NAR File
+1. **Download the pre-built NAR**: Use the file from `Custom_NiFi_Nars/json2pdf-processor-1.0.nar`
+2. **Copy to NiFi**: Copy the NAR file to your NiFi's `lib` directory
+3. **Restart NiFi**: Restart NiFi to load the processor
+4. **Find the processor**: Look for "JSON2PDFProcessor" in the "org.example" processor group
+
+#### Option 2: Build from Source
+1. **Build the NAR file** using Maven:
+   ```bash
+   mvn clean package
+   ```
+2. **Copy the generated NAR**: Use the file from `target/json2pdf-processor-1.0.nar`
+3. **Copy to NiFi**: Copy the NAR file to your NiFi's `lib` directory
+4. **Restart NiFi**: Restart NiFi to load the processor
+5. **Find the processor**: Look for "JSON2PDFProcessor" in the "org.example" processor group
 
 ## Building the Processor
 
@@ -225,19 +236,28 @@ mvn test
 
 ### Project Structure
 ```
-src/
-├── main/
-│   ├── java/
-│   │   └── org/example/
-│   │       └── JSON2PDFProcessor.java
-│   └── resources/
-│       └── META-INF/
-│           └── services/
-│               └── org.apache.nifi.processor.Processor
-└── test/
-    └── java/
-        └── org/example/
-            └── JSON2PDFProcessorTest.java
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── org/example/
+│   │   │       └── JSON2PDFProcessor.java
+│   │   └── resources/
+│   │       └── META-INF/
+│   │           └── services/
+│   │               └── org.apache.nifi.processor.Processor
+│   └── test/
+│       └── java/
+│           └── org/example/
+│               └── JSON2PDFProcessorTest.java
+├── Custom_NiFi_Nars/
+│   └── json2pdf-processor-1.0.nar    # Pre-built NAR file
+├── images/
+│   └── ScreenshotFlow.png            # NiFi flow template screenshot
+├── target/
+│   └── json2pdf-processor-1.0.nar    # Built NAR file (after mvn package)
+├── JSON2PDFExample.xml               # NiFi flow template
+├── docker-compose.yml                # Docker setup
+└── pom.xml                          # Maven configuration
 ```
 
 ### Key Components
