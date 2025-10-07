@@ -1,6 +1,24 @@
-# Custom NiFi Processor - JSON2PDF
+# JSON2PDF NiFi Processor
 
-A custom Apache NiFi processor that converts JSON input to formatted PDF documents using Apache PDFBox. Perfect for generating reports, invoices, or any document from structured data.
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Java](https://img.shields.io/badge/Java-11-orange.svg)](https://openjdk.java.net/)
+[![NiFi](https://img.shields.io/badge/NiFi-1.28-green.svg)](https://nifi.apache.org/)
+[![PDFBox](https://img.shields.io/badge/PDFBox-3.0.5-red.svg)](https://pdfbox.apache.org/)
+
+A custom Apache NiFi processor that converts JSON input to formatted PDF documents using Apache PDFBox. Perfect for generating reports, invoices, or any document from structured data in your NiFi data flows.
+
+## Table of Contents
+
+- [Features](#features)
+- [Processor Properties](#processor-properties)
+- [Relationships](#relationships)
+- [Usage Examples](#usage-examples)
+- [Installation](#installation)
+- [Building the Processor](#building-the-processor)
+- [Docker Deployment](#docker-deployment)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Features
 
@@ -66,6 +84,38 @@ A custom Apache NiFi processor that converts JSON input to formatted PDF documen
 
 **Output:** A PDF document showing only the values without keys.
 
+## Installation
+
+### Quick Start with Docker
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/json2pdf-nifi-processor.git
+   cd json2pdf-nifi-processor
+   ```
+
+2. **Build the processor:**
+   ```bash
+   mvn clean package
+   ```
+
+3. **Start NiFi with the processor:**
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Access NiFi:**
+   - Open http://localhost:8080/nifi/
+   - Login: admin / ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB
+   - Look for "JSON2PDFProcessor" in the "org.example" processor group
+
+### Manual Installation
+
+1. Build the NAR file using Maven
+2. Copy the generated `json2pdf-processor-1.0.nar` file to your NiFi's `lib` directory
+3. Restart NiFi
+4. The processor will be available in the processor palette
+
 ## Building the Processor
 
 ### Prerequisites
@@ -76,8 +126,8 @@ A custom Apache NiFi processor that converts JSON input to formatted PDF documen
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
-   cd custom-nifi-processor-pdfbox
+   git clone https://github.com/yourusername/json2pdf-nifi-processor.git
+   cd json2pdf-nifi-processor
    ```
 
 2. **Build the project:**
@@ -85,21 +135,59 @@ A custom Apache NiFi processor that converts JSON input to formatted PDF documen
    mvn clean package
    ```
 
-3. **The JAR file will be created at:**
+3. **The NAR file will be created at:**
    ```
-   target/pdfbox-processor-1.0.jar
-   ```
-
-## Installation in NiFi
-
-1. **Copy the JAR file** to your NiFi `lib` directory:
-   ```bash
-   cp target/pdfbox-processor-1.0.jar $NIFI_HOME/lib/
+   target/json2pdf-processor-1.0.nar
    ```
 
-2. **Restart NiFi** to load the new processor
+## Docker Deployment
 
-3. **Find the processor** in the NiFi UI under the "org.example" group
+This project includes a complete Docker Compose setup for easy deployment and testing.
+
+### Docker Compose Configuration
+
+The `docker-compose.yml` file includes:
+- **NiFi 1.28.0** with the JSON2PDF processor pre-loaded
+- **Persistent volumes** for NiFi data repositories
+- **Health checks** to ensure NiFi starts properly
+- **Port mapping** for web interface access
+
+### Environment Variables
+
+- `NIFI_WEB_HTTP_PORT=8080` - NiFi web interface port
+- `NIFI_SENSITIVE_PROPS_KEY=changeme123456789` - Encryption key for NiFi
+- `NIFI_SINGLE_USER_CREDENTIALS_USERNAME=admin` - Default username
+- `NIFI_SINGLE_USER_CREDENTIALS_PASSWORD=ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB` - Default password
+
+### Running with Docker
+
+```bash
+# Start NiFi with the processor
+docker-compose up -d
+
+# Check logs
+docker-compose logs -f nifi
+
+# Stop NiFi
+docker-compose down
+```
+
+## Testing
+
+The project includes comprehensive unit tests using JUnit 5 and NiFi Mock framework.
+
+### Running Tests
+
+```bash
+mvn test
+```
+
+### Test Coverage
+
+- **Valid JSON Processing**: Tests successful PDF generation from valid JSON
+- **Invalid JSON Handling**: Tests error handling for malformed JSON
+- **Property Validation**: Tests all processor properties
+- **Relationship Routing**: Tests SUCCESS and FAILURE relationship routing
 
 ## Development
 
@@ -108,83 +196,79 @@ A custom Apache NiFi processor that converts JSON input to formatted PDF documen
 src/
 ├── main/
 │   ├── java/
-│   │   └── org/
-│   │       └── example/
-│   │           ├── SalutationProcessorV4.java
-│   │           └── validators/
-│   │               └── CustomValidators.java
+│   │   └── org/example/
+│   │       └── JSON2PDFProcessor.java
 │   └── resources/
+│       └── META-INF/
+│           └── services/
+│               └── org.apache.nifi.processor.Processor
 └── test/
     └── java/
-        └── org/
-            └── example/
+        └── org/example/
+            └── JSON2PDFProcessorTest.java
 ```
 
 ### Key Components
 
-- **SalutationProcessorV4**: Main processor class extending `AbstractProcessor`
-- **CustomValidators**: Custom validation logic for the BeforeOrAfter property
+- **JSON2PDFProcessor**: Main processor class extending `AbstractProcessor`
+- **PDF Generation**: Uses Apache PDFBox for robust PDF creation
+- **JSON Processing**: Handles complex nested JSON structures
 - **Property Descriptors**: Define processor configuration properties
 - **Relationships**: Define success and failure paths for FlowFiles
 
 ### Dependencies
 
 The processor uses the following key dependencies:
-- Apache NiFi API (1.28.0)
-- Jackson for JSON processing (2.15.2)
-- Apache Commons IO (2.11.0)
-- PDFBox (3.0.5) - included for future PDF processing capabilities
-
-## Error Handling
-
-The processor handles various error scenarios:
-
-1. **Invalid BeforeOrAfter value**: FlowFile routed to FAILURE relationship
-2. **JSON parsing errors**: Falls back to plain text processing
-3. **Missing name field**: Uses "Unknown" as default name
-4. **Processing exceptions**: FlowFile routed to FAILURE relationship with error logging
-
-## Expression Language Support
-
-The processor supports NiFi Expression Language for:
-- **Salutation property**: Can reference FlowFile attributes
-- **Name Field property**: Can reference FlowFile attributes
-
-Example Expression Language usage:
-- `${salutation.text}` - Use FlowFile attribute for salutation
-- `${name.field}` - Use FlowFile attribute for field name
-
-## Testing
-
-The processor includes basic unit tests. To run tests:
-
-```bash
-mvn test
-```
+- **Apache NiFi API 1.28.0**: Core NiFi processor framework
+- **PDFBox 3.0.5**: PDF generation and manipulation
+- **Jackson 2.15.2**: JSON processing
+- **Apache Commons IO 2.11.0**: I/O utilities
+- **JUnit 5**: Unit testing framework
+- **NiFi Mock 1.28.0**: NiFi testing utilities
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+We welcome contributions! Please follow these steps:
+
+1. **Fork the repository**
+2. **Create a feature branch:**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. **Make your changes** and add tests
+4. **Run the test suite:**
+   ```bash
+   mvn test
+   ```
+5. **Commit your changes:**
+   ```bash
+   git commit -m "Add your feature description"
+   ```
+6. **Push to your branch:**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+7. **Create a Pull Request**
+
+### Development Guidelines
+
+- Follow Java coding standards
+- Add unit tests for new functionality
+- Update documentation as needed
+- Ensure all tests pass before submitting PR
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 
-For issues and questions:
-1. Check the NiFi documentation
-2. Review the processor logs in NiFi
-3. Create an issue in this repository
+- **Issues**: Report bugs and request features via [GitHub Issues](https://github.com/yourusername/json2pdf-nifi-processor/issues)
+- **Discussions**: Join the conversation in [GitHub Discussions](https://github.com/yourusername/json2pdf-nifi-processor/discussions)
+- **Documentation**: Check the [Wiki](https://github.com/yourusername/json2pdf-nifi-processor/wiki) for additional documentation
 
-## Version History
+## Acknowledgments
 
-- **v1.0**: Initial release with basic salutation functionality
-  - JSON and plain text processing
-  - Configurable salutation position
-  - Custom validation
-  - Error handling and logging
+- [Apache NiFi](https://nifi.apache.org/) - Data flow processing framework
+- [Apache PDFBox](https://pdfbox.apache.org/) - PDF generation library
+- [Jackson](https://github.com/FasterXML/jackson) - JSON processing library
